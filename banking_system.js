@@ -17,41 +17,51 @@ function menu() {
             rl.question('\nMasukkan jumlah deposit: ', (depositAmount) => {
                 const amount = parseFloat(depositAmount);
                 console.log("Memproses deposit...");
-
+                
                 setTimeout(() => {
                     rekening.deposit(amount)
                         .then((message) => {
                             console.log(message); // output sukses
-                            rl.close(); // menutup input readline setelah transaksi selesai
+                            lanjutTransaksi();
                         })
                         .catch((error) => {
                             console.error(error);
-                            rl.close(); // Menutup input readline jika ada error
+                            lanjutTransaksi();
                         });
-                }, 2000);
+                }, 2000); // delay deposit 2 detik
             });
-            
         } else if (pilihan === '2') {
             rl.question('\nMasukkan jumlah withdraw: ', (withdrawAmount) => {
                 const amount = parseFloat(withdrawAmount);
                 console.log("Memproses withdraw...");
-
+              
                 setTimeout(() => {
                     rekening.withdraw(amount)
                         .then((message) => {
                             console.log(message); // output sukses
-                            rl.close(); // menutup input readline setelah transaksi selesai
+                            lanjutTransaksi();
                         })
                         .catch((error) => {
                             console.error(error);
-                            rl.close(); // menutup input readline jika ada error
+                            lanjutTransaksi();
                         });
-                }, 2000);
-                });
-
+                }, 2000); // delay withdraw 2 detik
+            });
         } else {
             console.log("Pilihan tidak valid.");
-            rl.close(); 
+            menu(); // kembali ke menu jika input salah
+        }
+    });
+}
+
+// lanjutkan transaksi
+function lanjutTransaksi() {
+    rl.question('\nApakah ingin melanjutkan transaksi? (y/n): ', (jawaban) => {
+        if (jawaban.toLowerCase() === 'y') {
+            menu(); // back to menu untuk transaksi berikutnya
+        } else {
+            console.log("Transaksi selesai. Terima kasih!");
+            rl.close(); // menutup input readline
         }
     });
 }
