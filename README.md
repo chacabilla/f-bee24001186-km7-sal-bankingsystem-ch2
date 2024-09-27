@@ -5,7 +5,7 @@
 
 ## Flowchart
 
-![Flowchart Banking System](D:\latihan\flowchart-ch2.jpg "Flowchart Banking System")
+![Flowchart Banking System](/assets/flowchart-ch2.jpg "Flowchart Banking System")
 
 ## Cara Kerja Program
 
