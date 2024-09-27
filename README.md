@@ -5,7 +5,7 @@
 
 ## Flowchart
 
-![Flowchart Banking System](/assets/flowchart-ch2.jpg "Flowchart Banking System")
+![fc banking system](/assets/flowchart-ch2.jpg "Flowchart Banking System")
 
 ## Cara Kerja Program
 
