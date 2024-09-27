@@ -5,8 +5,6 @@
 
 ## Flowchart
 
-![fc banking system](/assets/flowchart-ch2.jpg "Flowchart Banking System")
-
 ## Cara Kerja Program
 
 1. **Inisialisasi**:
