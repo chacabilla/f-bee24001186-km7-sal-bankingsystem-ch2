@@ -6,3 +6,13 @@ SELECT
 FROM generate_series(1, 10) AS id;
 
 SELECT * FROM transactions;
+
+SELECT * FROM transactions WHERE type = 'deposit';
+
+SELECT * FROM transactions WHERE type = 'withdraw';
+
+UPDATE transactions
+SET amount = 2500
+WHERE id = 3;
+
+DELETE FROM transactions WHERE id = 8;

@@ -6,3 +6,11 @@ SELECT
 FROM generate_series(1, 10) AS id;
 
 SELECT * FROM accounts;
+
+SELECT * FROM accounts WHERE saldo > 5000;
+
+UPDATE accounts
+SET saldo = saldo + 1000
+WHERE id = 2;
+
+DELETE FROM accounts WHERE id = 9;
