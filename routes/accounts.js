@@ -1,8 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const accountService = require('../services/accounts');
+const { accountSchema } = require('../services/validation');
 
 router.post('/', async (req, res) => {
+    const { error } = accountSchema.validate(req.body);
+    if (error) {
+        return res.status(400).json({ error: error.details[0].message });
+    }
+
     try {
         const account = await accountService.createAccount(req.body);
         res.json(account);
