@@ -35,7 +35,8 @@ Sebelum menjalankan proyek ini, pastikan Anda memiliki teknologi berikut terinst
    ```
 
 2. **Jalankan aplikasi:**
-   ```node index.js
+   ```node 
+   index.js
    ```
 
 Aplikasi akan berjalan di `http://localhost:3000`.
