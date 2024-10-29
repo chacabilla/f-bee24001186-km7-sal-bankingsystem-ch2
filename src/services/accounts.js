@@ -47,14 +47,14 @@ class AccountService {
 
     async withdraw(accountId, amount) {
         const account = await prisma.bankAccount.findUnique({ where: { id: Number(accountId) } });
-
+        if (!account) throw new Error('Account not found');
         if (account.balance < amount) {
             throw new Error('Insufficient balance');
         }
 
         const updatedAccount = await prisma.bankAccount.update({
             where: { id: Number(accountId) },
-            data: { balance: account.balance - amount }
+            data: { balance: { decrement: amount } }
         });
         return updatedAccount;
     }
