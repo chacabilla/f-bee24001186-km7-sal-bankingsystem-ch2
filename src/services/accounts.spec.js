@@ -19,7 +19,7 @@ const prisma = new PrismaClient();
 
 describe('AccountService', () => {
     beforeEach(() => {
-        jest.clearAllMocks(); // Bersihkan mock sebelum setiap tes
+        jest.clearAllMocks();
     });
 
     test('createAccount should validate data and create an account', async () => {
