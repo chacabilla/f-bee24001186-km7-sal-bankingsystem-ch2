@@ -1,8 +1,21 @@
+const Joi = require('joi');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
+const transactionSchema = Joi.object({
+    sourceAccountId: Joi.number().integer().required(),
+    destinationAccountId: Joi.number().integer().required(),
+    amount: Joi.number().positive().required()
+});
+
 class TransactionService {
     async createTransaction(data) {
+        // validasi dengan Joi
+        const { error } = transactionSchema.validate(data);
+        if (error) {
+            throw new Error(error.details[0].message);
+        }
+
         const { sourceAccountId, destinationAccountId, amount } = data;
 
         try {

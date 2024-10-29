@@ -1,8 +1,22 @@
+const Joi = require('joi');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
+const accountSchema = Joi.object({
+    userId: Joi.number().integer().required(),
+    bankName: Joi.string().required(),
+    bankAccountNumber: Joi.string().required(),
+    balance: Joi.number().positive().required()
+});
+
 class AccountService {
     async createAccount(data) {
+        // validasi dengan Joi
+        const { error } = accountSchema.validate(data);
+        if (error) {
+            throw new Error(error.details[0].message);
+        }
+
         const { userId, bankName, bankAccountNumber, balance } = data;
         try {
             const account = await prisma.bankAccount.create({
