@@ -24,6 +24,7 @@ describe('TransactionService', () => {
     jest.clearAllMocks();
   });
 
+  // test createTransaction success case
   test('createTransaction should validate data and create a transaction', async () => {
     const mockTransaction = { id: 1, sourceAccountId: 1, destinationAccountId: 2, amount: 500 };
     prisma.bankAccount.findUnique
@@ -38,6 +39,37 @@ describe('TransactionService', () => {
     expect(prisma.transaction.create).toHaveBeenCalledWith({ data });
   });
 
+  // test createTransaction failed case (source account does not exist)
+  test('createTransaction should throw error if source account does not exist', async () => {
+    const data = { sourceAccountId: 1, destinationAccountId: 2, amount: 500 };
+
+    prisma.bankAccount.findUnique.mockResolvedValueOnce(null);
+    await expect(TransactionService.createTransaction(data)).rejects.toThrow('Source or Destination Account does not exist');
+  });
+
+  // test createTransaction failed case (destination account does not exist)
+  test('createTransaction should throw error if destination account does not exist', async () => {
+    const data = { sourceAccountId: 1, destinationAccountId: 2, amount: 500 };
+
+    prisma.bankAccount.findUnique
+      .mockResolvedValueOnce({ id: 1, balance: 1000 })
+      .mockResolvedValueOnce(null);
+    await expect(TransactionService.createTransaction(data)).rejects.toThrow('Source or Destination Account does not exist');
+  });
+
+  // test createTransaction failed case (transaction creation fails)
+  test('createTransaction should throw error if transaction creation fails', async () => {
+    const data = { sourceAccountId: 1, destinationAccountId: 2, amount: 500 };
+
+    prisma.bankAccount.findUnique
+      .mockResolvedValueOnce({ id: 1, balance: 1000 })
+      .mockResolvedValueOnce({ id: 2, balance: 2000 });
+    prisma.transaction.create.mockRejectedValue(new Error('Transaction creation failed'));
+
+    await expect(TransactionService.createTransaction(data)).rejects.toThrow('Transaction creation failed');
+  });
+
+  // test getAllTransactions success case
   test('getAllTransactions should return a list of transactions', async () => {
     const mockTransactions = [{ id: 1, amount: 500 }];
     prisma.transaction.findMany.mockResolvedValue(mockTransactions);
@@ -46,6 +78,7 @@ describe('TransactionService', () => {
     expect(result).toEqual(mockTransactions);
   });
 
+  // test getTransactionById success case
   test('getTransactionById should return a transaction by ID', async () => {
     const mockTransaction = { id: 1, sourceAccountId: 1, destinationAccountId: 2, amount: 500 };
     prisma.transaction.findUnique.mockResolvedValue(mockTransaction);
