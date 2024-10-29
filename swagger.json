@@ -1,0 +1,494 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Challenge 5",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "accounts"
+    },
+    {
+      "name": "users"
+    },
+    {
+      "name": "transactions"
+    }
+  ],
+  "paths": {
+    "/api/v1/accounts": {
+      "post": {
+        "tags": [
+          "accounts"
+        ],
+        "summary": "create account",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "userId": 2,
+                  "bankName": "Bank B",
+                  "bankAccountNumber": "1234567",
+                  "balance": 1000000
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{\r\n    \"error\": \"Account with this bank account number already exists\"\r\n}"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "accounts"
+        ],
+        "summary": "get all account",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "[\r\n    {\r\n        \"id\": 4,\r\n        \"userId\": 1,\r\n        \"bankName\": \"Bank B\",\r\n        \"bankAccountNumber\": \"123456789\",\r\n        \"balance\": 1000000\r\n    },\r\n    {\r\n        \"id\": 9,\r\n        \"userId\": 2,\r\n        \"bankName\": \"Bank A\",\r\n        \"bankAccountNumber\": \"1234567890\",\r\n        \"balance\": 1000000\r\n    },\r\n    {\r\n        \"id\": 12,\r\n        \"userId\": 2,\r\n        \"bankName\": \"Bank B\",\r\n        \"bankAccountNumber\": \"1234567\",\r\n        \"balance\": 1000000\r\n    },\r\n    {\r\n        \"id\": 13,\r\n        \"userId\": 2,\r\n        \"bankName\": \"Bank B\",\r\n        \"bankAccountNumber\": \"7654321\",\r\n        \"balance\": 1000000\r\n    }\r\n]"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{\r\n    \"error\": \"Token not provided\"\r\n}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accounts/:id": {
+      "get": {
+        "tags": [
+          "accounts"
+        ],
+        "summary": "get account by id",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{\r\n    \"id\": 4,\r\n    \"userId\": 1,\r\n    \"bankName\": \"Bank B\",\r\n    \"bankAccountNumber\": \"123456789\",\r\n    \"balance\": 1000000\r\n}"
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{\r\n    \"error\": \"Token not provided\"\r\n}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accounts/:id/withdraw": {
+      "put": {
+        "tags": [
+          "accounts"
+        ],
+        "summary": "withdraw",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "amount": 100
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{\r\n    \"id\": 4,\r\n    \"userId\": 1,\r\n    \"bankName\": \"Bank B\",\r\n    \"bankAccountNumber\": \"123456789\",\r\n    \"balance\": 999900\r\n}"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{\r\n    \"error\": \"Account not found\"\r\n}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accounts/id": {
+      "delete": {
+        "tags": [
+          "accounts"
+        ],
+        "summary": "delete account",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{\r\n    \"id\": 13,\r\n    \"userId\": 2,\r\n    \"bankName\": \"Bank B\",\r\n    \"bankAccountNumber\": \"7654321\",\r\n    \"balance\": 1000000\r\n}"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{\r\n    \"error\": \"Account not found\"\r\n}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/accounts/:id/deposit": {
+      "put": {
+        "tags": [
+          "accounts"
+        ],
+        "summary": "deposit",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "amount": 5000
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{\r\n    \"id\": 4,\r\n    \"userId\": 1,\r\n    \"bankName\": \"Bank B\",\r\n    \"bankAccountNumber\": \"123456789\",\r\n    \"balance\": 1009900\r\n}"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{\r\n    \"error\": \"Account not found\"\r\n}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/register": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "register",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "name": "lia",
+                  "email": "lia@gmail.com",
+                  "password": "12345678",
+                  "profile": {
+                    "identityType": "ktp",
+                    "identityNumber": "964964",
+                    "address": "Jl. Merdeka Barat"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{\r\n    \"id\": 7,\r\n    \"name\": \"lia\",\r\n    \"email\": \"lia@gmail.com\",\r\n    \"password\": \"$2a$10$ui23G/XqC8vsYVq1QonwNOOUqClgH089cm/EU4zU0.2XT22P5Fiiy\"\r\n}"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{\r\n    \"error\": \"User with this email already exists\"\r\n}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Get all users",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "[\r\n    {\r\n        \"id\": 1,\r\n        \"name\": \"aulia\",\r\n        \"email\": \"aulia@example.com\",\r\n        \"password\": \"7895678\",\r\n        \"profile\": {\r\n            \"id\": 1,\r\n            \"userId\": 1,\r\n            \"identityType\": \"ktp\",\r\n            \"identityNumber\": \"54321\",\r\n            \"address\": \"Jl. Merdeka 2\"\r\n        }\r\n    },\r\n    {\r\n        \"id\": 2,\r\n        \"name\": \"billa\",\r\n        \"email\": \"billa@example.com\",\r\n        \"password\": \"7895678\",\r\n        \"profile\": {\r\n            \"id\": 2,\r\n            \"userId\": 2,\r\n            \"identityType\": \"ktp\",\r\n            \"identityNumber\": \"54321\",\r\n            \"address\": \"Jl. Merdeka 2\"\r\n        }\r\n    },\r\n    {\r\n        \"id\": 3,\r\n        \"name\": \"caca\",\r\n        \"email\": \"caca@gmail.com\",\r\n        \"password\": \"$2a$10$7SC6yFXZMrS/U0S7YQCu3OXYvGY/FURiqXRKAgxz0HLvkTEi6UUve\",\r\n        \"profile\": {\r\n            \"id\": 3,\r\n            \"userId\": 3,\r\n            \"identityType\": \"ktp\",\r\n            \"identityNumber\": \"964964\",\r\n            \"address\": \"Jl. Merdeka Barat\"\r\n        }\r\n    },\r\n    {\r\n        \"id\": 4,\r\n        \"name\": \"test\",\r\n        \"email\": \"test@gmail.com\",\r\n        \"password\": \"$2a$10$G4jCW.iErcGv/6HwsieiAOGZepA1CsmutJHR.n.H9fk6ESFizUfJC\",\r\n        \"profile\": {\r\n            \"id\": 4,\r\n            \"userId\": 4,\r\n            \"identityType\": \"ktp\",\r\n            \"identityNumber\": \"964964\",\r\n            \"address\": \"Jl. Merdeka Barat\"\r\n        }\r\n    },\r\n    {\r\n        \"id\": 7,\r\n        \"name\": \"lia\",\r\n        \"email\": \"lia@gmail.com\",\r\n        \"password\": \"$2a$10$ui23G/XqC8vsYVq1QonwNOOUqClgH089cm/EU4zU0.2XT22P5Fiiy\",\r\n        \"profile\": {\r\n            \"id\": 5,\r\n            \"userId\": 7,\r\n            \"identityType\": \"ktp\",\r\n            \"identityNumber\": \"964964\",\r\n            \"address\": \"Jl. Merdeka Barat\"\r\n        }\r\n    }\r\n]"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/:id": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Get detail user",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{\r\n    \"id\": 4,\r\n    \"name\": \"test\",\r\n    \"email\": \"test@gmail.com\",\r\n    \"password\": \"$2a$10$G4jCW.iErcGv/6HwsieiAOGZepA1CsmutJHR.n.H9fk6ESFizUfJC\",\r\n    \"profile\": {\r\n        \"id\": 4,\r\n        \"userId\": 4,\r\n        \"identityType\": \"ktp\",\r\n        \"identityNumber\": \"964964\",\r\n        \"address\": \"Jl. Merdeka Barat\"\r\n    }\r\n}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/login": {
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "email": "test@gmail.com",
+                  "password": "12345678"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{\r\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjQsImlhdCI6MTczMDIxNjU2MSwiZXhwIjoxNzMwMjIwMTYxfQ.Uls8Xx0Iex7jRuDbYb3pQEuBRsvOOW_VESUTIvzZsuM\"\r\n}"
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{\r\n    \"error\": \"Invalid email or password\"\r\n}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/transactions": {
+      "post": {
+        "tags": [
+          "transactions"
+        ],
+        "summary": "create transactions",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "sourceAccountId": 4,
+                  "destinationAccountId": 9,
+                  "amount": 100
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{\r\n    \"id\": 2,\r\n    \"sourceAccountId\": 4,\r\n    \"destinationAccountId\": 9,\r\n    \"amount\": 100\r\n}"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{\r\n    \"error\": \"Source or Destination Account does not exist\"\r\n}"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "transactions"
+        ],
+        "summary": "get all transactions",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "[\r\n    {\r\n        \"id\": 1,\r\n        \"sourceAccountId\": 4,\r\n        \"destinationAccountId\": 9,\r\n        \"amount\": 100\r\n    },\r\n    {\r\n        \"id\": 2,\r\n        \"sourceAccountId\": 4,\r\n        \"destinationAccountId\": 9,\r\n        \"amount\": 100\r\n    },\r\n    {\r\n        \"id\": 3,\r\n        \"sourceAccountId\": 4,\r\n        \"destinationAccountId\": 9,\r\n        \"amount\": 100\r\n    }\r\n]"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/transactions/:id": {
+      "get": {
+        "tags": [
+          "transactions"
+        ],
+        "summary": "get transactions by id",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "examples": {
+                  "example-0": {
+                    "summary": "200",
+                    "value": "{\r\n    \"id\": 2,\r\n    \"sourceAccountId\": 4,\r\n    \"destinationAccountId\": 9,\r\n    \"amount\": 100,\r\n    \"sourceAccount\": {\r\n        \"id\": 4,\r\n        \"userId\": 1,\r\n        \"bankName\": \"Bank B\",\r\n        \"bankAccountNumber\": \"123456789\",\r\n        \"balance\": 1000000\r\n    },\r\n    \"destinationAccount\": {\r\n        \"id\": 9,\r\n        \"userId\": 2,\r\n        \"bankName\": \"Bank A\",\r\n        \"bankAccountNumber\": \"1234567890\",\r\n        \"balance\": 1000000\r\n    }\r\n}"
+                  },
+                  "example-1": {
+                    "summary": "200",
+                    "value": "null"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

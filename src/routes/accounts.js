@@ -1,14 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const accountService = require('../services/accounts');
-const { accountSchema } = require('../services/validation');
+const accountSchema = require('../services/accounts');
+const authMiddleware = require('../middleware/auth');
 
+// POST: create a new account
 router.post('/', async (req, res) => {
-    const { error } = accountSchema.validate(req.body);
-    if (error) {
-        return res.status(400).json({ error: error.details[0].message });
-    }
-
     try {
         const account = await accountService.createAccount(req.body);
         res.json(account);
@@ -17,7 +14,8 @@ router.post('/', async (req, res) => {
     }
 });
 
-router.get('/', async (req, res) => {
+// GET: get all accounts
+router.get('/', authMiddleware, async (req, res) => {
     try {
         const accounts = await accountService.getAllAccounts();
         res.json(accounts);
@@ -26,7 +24,8 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/:accountId', async (req, res) => {
+// GET: get an account by ID
+router.get('/:accountId', authMiddleware, async (req, res) => {
     try {
         const account = await accountService.getAccountById(req.params.accountId);
         res.json(account);
@@ -35,6 +34,7 @@ router.get('/:accountId', async (req, res) => {
     }
 });
 
+// PUT: withdraw from an account
 router.put('/:id/withdraw', async (req, res) => {
     try {
         const updatedAccount = await accountService.withdraw(req.params.id, req.body.amount);
@@ -44,6 +44,7 @@ router.put('/:id/withdraw', async (req, res) => {
     }
 });
 
+// PUT: deposit to an account
 router.put('/:id/deposit', async (req, res) => {
     try {
         const updatedAccount = await accountService.deposit(req.params.id, req.body.amount);
@@ -53,6 +54,7 @@ router.put('/:id/deposit', async (req, res) => {
     }
 });
 
+// DELETE: delete an account
 router.delete('/:accountId', async (req, res) => {
     try {
         const deletedAccount = await accountService.deleteAccount(req.params.accountId);

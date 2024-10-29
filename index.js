@@ -2,6 +2,9 @@
     const { PrismaClient } = require('@prisma/client');
     const bodyParser = require('body-parser');
     const app = express();
+    const swaggerUi = require('swagger-ui-express');
+    const swaggerDocument = require('./swagger.json');
+    const PORT = 3000;
 
     // inisialisasi prisma client
     const prisma = new PrismaClient();
@@ -23,12 +26,18 @@
     app.use('/api/v1/accounts', accountRoutes);
     app.use('/api/v1/transactions', transactionRoutes);
 
+    // swagger routes
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
     app.get('/', (req, res) => {
         res.render('index'); // Render index.ejs
     });
 
-    const PORT = 3000;
-    app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
-    });
+    if (require.main === module) {
+        app.listen(PORT, () => {
+            console.log(`Server is running on port ${PORT}`);
+            console.log(`API docs available at http://localhost:${PORT}/api-docs`);
+        });
+    }
 
+    module.exports = app;

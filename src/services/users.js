@@ -16,13 +16,20 @@ const userSchema = Joi.object({
 
 class UserService {
     async createUser(data) {
-        // validasi dengan Joi
         const { error } = userSchema.validate(data);
         if (error) {
             throw new Error(error.details[0].message);
         }
 
         const { name, email, password, profile } = data;
+
+        const existingUser = await prisma.user.findUnique({
+            where: { email }
+        });
+
+        if (existingUser) {
+            throw new Error('User with this email already exists');
+        }
 
         try {
             const hashedPassword = await bcrypt.hash(password, 10);
