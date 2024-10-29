@@ -1,6 +1,5 @@
 const bcrypt = require('bcryptjs');
 const { PrismaClient } = require('@prisma/client');
- // pastikan ini mengarah ke file prisma yang benar
 const UserService = require('../users');
 
 jest.mock('bcryptjs');
@@ -22,6 +21,7 @@ describe('UserService', () => {
         jest.clearAllMocks();
     });
 
+    // test createUser success case
     test('createUser should hash password and create a user', async () => {
         const mockUser = { 
             id: 1, 
@@ -44,7 +44,7 @@ describe('UserService', () => {
                 identityType: 'ktp',
                 identityNumber: '123456789',
                 address: '123 Main St'
-            } // Sertakan struktur profile yang sesuai
+            }
         };
         
         const result = await UserService.createUser(data);
@@ -66,6 +66,7 @@ describe('UserService', () => {
         });
     });
 
+    // test createUser failed case (data validation fails)
     test('createUser should throw an error if validation fails', async () => {
         const data = {
             name: 'John Doe',
@@ -80,14 +81,35 @@ describe('UserService', () => {
     
         await expect(UserService.createUser(data)).rejects.toThrow('\"password\" length must be at least 6 characters long');
     });
+
+    // test createUser failed case (user with email already exists)
+    test('createUser should throw an error if user with email already exists', async () => {
+        const existingUser = { id: 1, email: 'john@example.com' };
+        prisma.user.findUnique.mockResolvedValue(existingUser);
     
-    test('getUserById should return null if user not found', async () => {
-        prisma.user.findUnique.mockResolvedValue(null); // Mock untuk tidak menemukan user
+        const data = {
+            name: 'John Doe',
+            email: 'john@example.com',
+            password: 'password123',
+            profile: {
+                identityType: 'ktp',
+                identityNumber: '123456789',
+                address: '123 Main St'
+            }
+        };
         
-        const result = await UserService.getUserById(999); // ID yang tidak ada
-        expect(result).toBeNull(); // Pastikan hasilnya null
+        await expect(UserService.createUser(data)).rejects.toThrow('User with this email already exists');
+    });
+    
+    // test getAllUsers no data case
+    test('getUserById should return null if user not found', async () => {
+        prisma.user.findUnique.mockResolvedValue(null);
+        
+        const result = await UserService.getUserById(999);
+        expect(result).toBeNull();
     });
 
+    // test getAllUsers success case
     test('getAllUsers should return a list of users', async () => {
         const mockUsers = [
             {
@@ -118,6 +140,7 @@ describe('UserService', () => {
         });
     });
 
+    // test getUserById success case
     test('getUserById should return a user by ID', async () => {
         const mockUser = {
             id: 1,
@@ -138,11 +161,12 @@ describe('UserService', () => {
         });
     });
 
+    // test getUserById no data case
     test('getUserById should return null if user not found', async () => {
-        prisma.user.findUnique.mockResolvedValue(null); // Mock untuk tidak menemukan user
+        prisma.user.findUnique.mockResolvedValue(null);
         
-        const result = await UserService.getUserById(999); // ID yang tidak ada
-        expect(result).toBeNull(); // Pastikan hasilnya null
+        const result = await UserService.getUserById(999); 
+        expect(result).toBeNull();
     });
     
 });

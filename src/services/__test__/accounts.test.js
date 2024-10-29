@@ -1,7 +1,6 @@
 const AccountService = require('../accounts');
 const { PrismaClient } = require('@prisma/client');
 
-// Buat mock untuk PrismaClient
 jest.mock('@prisma/client', () => {
     const mPrismaClient = {
         bankAccount: {
@@ -22,6 +21,7 @@ describe('AccountService', () => {
         jest.clearAllMocks();
     });
 
+    // test createAccount success case
     test('createAccount should validate data and create an account', async () => {
         const mockAccount = { id: 1, userId: 1, bankName: 'Test Bank', bankAccountNumber: '123456', balance: 1000 };
         prisma.bankAccount.create.mockResolvedValue(mockAccount);
@@ -40,14 +40,23 @@ describe('AccountService', () => {
         expect(result).toEqual(mockAccount);
     });
 
-    test('createAccount should throw an error if creation fails', async () => {
-        prisma.bankAccount.create.mockRejectedValue(new Error('Account already exists'));
-
-        const data = { userId: 1, bankName: 'Test Bank', bankAccountNumber: '123456', balance: 1000 };
-        
-        await expect(AccountService.createAccount(data)).rejects.toThrow('Account already exists');
+    // test createAccount failed case (account with bankAccountNumber already exists)
+    test('createAccount should throw an error if account with bankAccountNumber already exists', async () => {
+        const existingAccount = { id: 1, userId: 1, bankName: 'Test Bank', bankAccountNumber: '123456', balance: 1000 };
+        prisma.bankAccount.findUnique.mockResolvedValue(existingAccount); // Mock existing account
+    
+        const data = { userId: 2, bankName: 'Another Bank', bankAccountNumber: '123456', balance: 5000 };
+    
+        await expect(AccountService.createAccount(data)).rejects.toThrow('Account with this bank account number already exists');
     });
 
+    test('createAccount should throw an error if data validation fails', async () => {
+        const invalidData = { userId: 1, bankName: 'Test Bank', balance: 1000 };
+    
+        await expect(AccountService.createAccount(invalidData)).rejects.toThrow('"bankAccountNumber" is required');
+    });
+
+    // test getAllAccounts success case
     test('getAllAccounts should return a list of accounts', async () => {
         const mockAccounts = [{ id: 1, bankName: 'Test Bank', balance: 1000 }];
         prisma.bankAccount.findMany.mockResolvedValue(mockAccounts);
@@ -58,6 +67,7 @@ describe('AccountService', () => {
         expect(result).toEqual(mockAccounts);
     });
 
+    // test getAccountById success case
     test('getAccountById should return an account by ID', async () => {
         const mockAccount = { id: 1, bankName: 'Test Bank', balance: 1000 };
         prisma.bankAccount.findUnique.mockResolvedValue(mockAccount);
@@ -67,6 +77,7 @@ describe('AccountService', () => {
         expect(result).toEqual(mockAccount);
     });
 
+    // test withdraw failed case (balance is insufficient)
     test('withdraw should throw error if balance is insufficient', async () => {
         prisma.bankAccount.findUnique.mockResolvedValue({ id: 1, balance: 500 });
 
@@ -74,21 +85,23 @@ describe('AccountService', () => {
         expect(prisma.bankAccount.findUnique).toHaveBeenCalledWith({ where: { id: 1 } });
     });
 
+    // test withdraw success case
     test('withdraw should update balance correctly if sufficient', async () => {
         const mockAccount = { id: 1, balance: 1000 };
         prisma.bankAccount.findUnique.mockResolvedValue(mockAccount);
-        const updatedAccount = { id: 1, balance: 800 }; // Update saldo sesuai dengan penarikan
+        const updatedAccount = { id: 1, balance: 800 };
         prisma.bankAccount.update.mockResolvedValue(updatedAccount);
     
-        const result = await AccountService.withdraw(1, 200); // Menarik 200
+        const result = await AccountService.withdraw(1, 200);
     
         expect(prisma.bankAccount.update).toHaveBeenCalledWith({
             where: { id: 1 },
-            data: { balance: { decrement: 200 } }, // Ini harus tetap
+            data: { balance: { decrement: 200 } },
         });
-        expect(result).toEqual(updatedAccount); // Pastikan hasilnya benar
+        expect(result).toEqual(updatedAccount);
     });
 
+    // test depoit success case
     test('deposit should update balance correctly', async () => {
         const updatedAccount = { id: 1, balance: 1500 };
         prisma.bankAccount.update.mockResolvedValue(updatedAccount);
@@ -102,9 +115,10 @@ describe('AccountService', () => {
         expect(result).toEqual(updatedAccount);
     });
 
+    // test deleteAccount success case
     test('deleteAccount should delete an account and return it', async () => {
         const mockDeletedAccount = { id: 1, bankName: 'Test Bank', balance: 1000 };
-        prisma.bankAccount.delete.mockResolvedValue(mockDeletedAccount); // Mock return value untuk delete
+        prisma.bankAccount.delete.mockResolvedValue(mockDeletedAccount);
 
         const result = await AccountService.deleteAccount(1);
 
@@ -113,4 +127,12 @@ describe('AccountService', () => {
         });
         expect(result).toEqual(mockDeletedAccount);
     });
+    
+    // test deleteAccount failed case (account not found)
+    test('deleteAccount should throw an error if account not found', async () => {
+        prisma.bankAccount.findUnique.mockResolvedValue(null);
+    
+        await expect(AccountService.deleteAccount(1)).rejects.toThrow('Account not found');
+    });
+    
 });
