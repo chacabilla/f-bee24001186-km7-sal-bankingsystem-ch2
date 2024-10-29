@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const transactionService = require('../services/transactions');
-const { transactionSchema } = require('../services/validation');
 
 router.post('/', async (req, res) => {
     const { error } = transactionSchema.validate(req.body);

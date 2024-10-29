@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const accountService = require('../services/accounts');
-const { accountSchema } = require('../services/validation');
 
 router.post('/', async (req, res) => {
     const { error } = accountSchema.validate(req.body);
