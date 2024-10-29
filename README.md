@@ -1,42 +1,66 @@
-# Bank System API
+# Banking System Challenge Chapter 5
 
 ## Deskripsi
-Proyek ini adalah sebuah API untuk sistem perbankan yang dibangun dengan menggunakan Express.js, Prisma, dan PostgreSQL. API ini memungkinkan pengguna untuk melakukan operasi seperti pembuatan pengguna, akun bank, dan transaksi antara akun bank.
+Project ini adalah API backend untuk mengelola data pengguna, akun bank, dan transaksi keuangan. API ini memungkinkan operasi CRUD pada akun pengguna, mencakup fitur deposit, withdraw, dan manajemen profil. Project ini dibangun menggunakan Express.js dan Prisma, serta menerapkan validasi menggunakan Joi.
 
-## Prerequisites
-Sebelum menjalankan proyek ini, pastikan Anda memiliki teknologi berikut terinstal:
-- Node.js (versi 14.x atau lebih baru)
-- PostgreSQL (versi 12.x atau lebih baru)
-- Prisma CLI (pastikan untuk menginstal saat menginstal dependensi)
+## Fitur
+- Manajemen Pengguna: CRUD pada data pengguna.
+- Manajemen Akun Bank: Membuat, mengubah, menghapus, serta mengelola saldo akun.
+- Transaksi: Deposit dan withdraw pada akun.
+- Dokumentasi API menggunakan Swagger.
+- Unit Testing menggunakan jest.
 
-## Cara Memakai
-1. **Clone repositori ini:**
+## Persyaratan
+- Node.js (minimal versi 14)
+- PostgreSQL (untuk penyimpanan data)
+- Prisma (ORM untuk integrasi database)
+- Joi (untuk validasi data)
+
+## Instalasi
+1. Clone repository ini:
    ```bash
-   git clone https://github.com/username/repo-name.git
-   cd repo-name
+   git clone https://github.com/username/projectname.git
+   cd projectname
    ```
 
-2. **Instal dependensi:**
+2. Instal dependencies:
    ```bash
-   npm install express prisma @prisma/client joi ejs
+   npm install
    ```
 
-3. **Buat file `.env` dari file sample:**
-   Salin file `.env.sample` menjadi `.env` dan sesuaikan `DATABASE_URL` dengan pengaturan database Anda.
-   ```bash
-   cp .env.sample .env
-   ```
+3. Konfigurasikan database:
+   - Salin `.env.example` menjadi `.env` dan atur variabel sesuai dengan konfigurasi PostgreSQL Anda.
+   - Contoh konfigurasi:
+     ```
+     DATABASE_URL="postgresql://user:password@localhost:5432/database_name"
+     ```
 
-## Cara Menjalankan
-1. **Migrasi database:**
-   Jalankan migrasi untuk membuat struktur tabel di database Anda.
+4. Lakukan migrasi database menggunakan Prisma:
    ```bash
    npx prisma migrate dev --name init
    ```
 
-2. **Jalankan aplikasi:**
-   ```bash 
-   node index.js
-   ```
+## Menjalankan Aplikasi
+Jalankan server:
+```bash
+node index.js
+```
+Server akan berjalan di `http://localhost:3000`.
 
-Aplikasi akan berjalan di `http://localhost:3000`.
+## Struktur Project
+- `models/`: Berisi definisi model dengan Prisma.
+- `routes/`: Berisi definisi rute untuk setiap endpoint.
+- `services/`: Berisi logika bisnis dan integrasi database.
+- `middleware/`: Berisi middleware untuk autentikasi dan validasi.
+
+## Dokumentasi API
+Swagger digunakan untuk dokumentasi API. Setelah server berjalan, dokumentasi dapat diakses di:
+```
+http://localhost:3000/api-docs
+```
+
+## Testing
+Project ini menggunakan Jest untuk testing. Untuk menjalankan tes, gunakan:
+```bash
+npm test
+```
