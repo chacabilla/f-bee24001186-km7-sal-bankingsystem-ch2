@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 const { PrismaClient } = require('@prisma/client');
  // pastikan ini mengarah ke file prisma yang benar
-const UserService = require('../../src/services/users');
+const UserService = require('../users');
 
 jest.mock('bcryptjs');
 jest.mock('@prisma/client', () => {

@@ -1,4 +1,4 @@
-const AccountService = require('./accounts');
+const AccountService = require('../accounts');
 const { PrismaClient } = require('@prisma/client');
 
 // Buat mock untuk PrismaClient

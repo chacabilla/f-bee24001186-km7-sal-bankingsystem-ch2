@@ -1,5 +1,5 @@
 // src/services/transactions.spec.js
-const TransactionService = require('./transactions');
+const TransactionService = require('../transactions');
 const { PrismaClient } = require('@prisma/client');
 
 // Mock prisma client

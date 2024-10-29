@@ -1,4 +1,4 @@
-const authMiddleware = require('./auth');
+const authMiddleware = require('../auth');
 const httpMocks = require('node-mocks-http');
 const jwt = require('jsonwebtoken');
 
