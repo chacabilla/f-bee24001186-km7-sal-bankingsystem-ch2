@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --coverage"
   },
   "keywords": [],
   "author": "",
@@ -11,9 +11,13 @@
   "description": "",
   "dependencies": {
     "@prisma/client": "^5.21.1",
+    "bcryptjs": "^2.4.3",
     "ejs": "^3.1.10",
     "express": "^4.21.1",
     "joi": "^17.13.3",
     "prisma": "^5.21.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
   }
 }
