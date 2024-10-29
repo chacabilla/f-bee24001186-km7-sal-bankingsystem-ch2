@@ -1,16 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const accountService = require('../services/accounts');
-const { accountSchema } = require('../services/accounts');
+const accountSchema = require('../services/accounts');
 const authMiddleware = require('../middleware/auth');
 
 // POST: create a new account
 router.post('/', async (req, res) => {
-    const { error } = accountSchema.validate(req.body);
-    if (error) {
-        return res.status(400).json({ error: error.details[0].message });
-    }
-
     try {
         const account = await accountService.createAccount(req.body);
         res.json(account);

@@ -18,6 +18,14 @@ class AccountService {
         }
 
         const { userId, bankName, bankAccountNumber, balance } = data;
+        const existingAccount = await prisma.bankAccount.findUnique({
+            where: { bankAccountNumber }
+        });
+
+        if (existingAccount) {
+            throw new Error('Account with this bank account number already exists');
+        }
+
         try {
             const account = await prisma.bankAccount.create({
                 data: {
@@ -60,6 +68,9 @@ class AccountService {
     }
 
     async deposit(accountId, amount) {
+        const account = await prisma.bankAccount.findUnique({ where: { id: Number(accountId) } });
+        if (!account) throw new Error('Account not found');
+
         const updatedAccount = await prisma.bankAccount.update({
             where: { id: Number(accountId) },
             data: { balance: { increment: amount } }
@@ -68,6 +79,8 @@ class AccountService {
     }
 
     async deleteAccount(accountId) {
+        const account = await prisma.bankAccount.findUnique({ where: { id: Number(accountId) } });
+        if (!account) throw new Error('Account not found');
         try {
             const deletedAccount = await prisma.bankAccount.delete({
                 where: { id: Number(accountId) }
