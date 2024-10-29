@@ -7,7 +7,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 // POST: create a new user
-router.post('/', async (req, res) => {
+router.post('/register', async (req, res) => {
     const { error } = userSchema.validate(req.body);
     if (error) {
         return res.status(400).json({ error: error.details[0].message });
