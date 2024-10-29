@@ -8,15 +8,15 @@
 
     // set view engine
     app.set('view engine', 'ejs');
-    app.set('views', './views');
+    app.set('views', './src/views');
 
     // middleware untuk parsing JSON
     app.use(bodyParser.json());
 
     // routes
-    const userRoutes = require('./routes/users');
-    const accountRoutes = require('./routes/accounts');
-    const transactionRoutes = require('./routes/transactions');
+    const userRoutes = require('./src/routes/users');
+    const accountRoutes = require('./src/routes/accounts');
+    const transactionRoutes = require('./src/routes/transactions');
 
     // use routes
     app.use('/api/v1/users', userRoutes);
