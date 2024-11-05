@@ -37,7 +37,7 @@ class AccountService {
             });
             return account;
         } catch (error) {
-            throw new Error(error.message);
+            throw new Error(`failed to create account: ${error.message} || 'unknown error occurred'`);
         }
     }
 
@@ -87,7 +87,7 @@ class AccountService {
             });
             return deletedAccount;
         } catch (error) {
-            throw new Error(error.message);
+            throw new Error(`Failed to delete account: ${error.message}`);
         }
     }
 }

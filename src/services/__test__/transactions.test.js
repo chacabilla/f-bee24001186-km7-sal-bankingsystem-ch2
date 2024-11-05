@@ -50,7 +50,7 @@ describe('TransactionService', () => {
     const data = { sourceAccountId: 1, destinationAccountId: 2, amount: 500 };
 
     prisma.bankAccount.findUnique
-      .mockResolvedValueOnce({ id: 1, balance: 1000 })
+      .mockResolvedValueOnce({ id: 1 })
       .mockResolvedValueOnce(null);
     await expect(TransactionService.createTransaction(data)).rejects.toThrow('Source or Destination Account does not exist');
   });
