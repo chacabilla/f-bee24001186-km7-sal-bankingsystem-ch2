@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const accountService = require('../services/accounts');
-const accountSchema = require('../services/accounts');
 const authMiddleware = require('../middleware/auth');
 
 // POST: create a new account
