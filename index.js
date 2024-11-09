@@ -4,7 +4,6 @@ const bodyParser = require('body-parser');
 const app = express();
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
-const PORT = 3000;
 
 // set view engine
 app.set('view engine', 'ejs');
@@ -15,7 +14,6 @@ app.use(bodyParser.json());
 
 // media handler
 app.use('/images', express.static('uploads/images'));
-app.use('/files', express.static('uploads/files'));
 
 const mediaRoutes = require('./src/routes/media');
 app.use('/api/v1/media', mediaRoutes);
@@ -37,11 +35,11 @@ app.get('/', (req, res) => {
     res.render('index'); // Render index.ejs
 });
 
-if (require.main === module) {
-    app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
-        console.log(`API docs available at http://localhost:${PORT}/api-docs`);
-    });
-}
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+    console.log(`API docs available at http://localhost:${PORT}/api-docs`);
+});
+
 
 module.exports = app;
