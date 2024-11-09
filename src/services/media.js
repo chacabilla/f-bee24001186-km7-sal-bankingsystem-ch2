@@ -22,24 +22,35 @@ module.exports = {
     
         imagekitUpload: async (req, res) => {
             try {
-                const stringFile = req.file.buffer.toString('base64');
+                if (!req.file) {
+                    return res.status(400).json({
+                        status: false,
+                        message: 'No file uploaded',
+                    });
+                }
+        
+                const stringFile = req.file.buffer.toString('base64'); // Convert buffer to base64 string
         
                 const uploadFile = await imagekit.upload({
                     file: stringFile,
-                    fileName: req.file.originalname
+                    fileName: req.file.originalname,
+                    useUniqueFileName: true,
+                    folder: '/uploads',
                 });
         
-                return res.json({
+                // Respond with the image URL from ImageKit
+                return res.status(200).json({
                     status: true,
                     message: 'Image uploaded successfully',
                     data: {
-                        name: uploadFile.name,
-                        url: uploadFile.url,
-                        type: uploadFile.fileType
-                    }
-                });    
-            } catch (err) {
-                throw err;
+                        image_url: uploadFile.url, // This is the URL returned by ImageKit
+                    },
+                });
+            } catch (error) {
+                return res.status(500).json({
+                    status: false,
+                    message: 'Image upload failed',
+                });
             }
         }
 };
