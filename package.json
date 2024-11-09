@@ -2,7 +2,13 @@
   "name": "f-bee24001186-km7-sal-bankingsystem-ch2",
   "version": "1.0.0",
   "main": "index.js",
+  "engines": {
+    "node": "20   .x"
+  },
   "scripts": {
+    "postinstall": "prisma generate",
+    "start": "node src/index.js",
+    "start:dev": "nodemon src/index.js",
     "test": "jest --coverage"
   },
   "keywords": [],
@@ -15,6 +21,7 @@
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "express": "^4.21.1",
+    "imagekit": "^5.2.0",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
