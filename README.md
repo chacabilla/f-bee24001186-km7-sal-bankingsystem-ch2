@@ -56,7 +56,7 @@ Server akan berjalan di `http://localhost:3000`.
 ## Dokumentasi API
 Swagger digunakan untuk dokumentasi API. Setelah server berjalan, dokumentasi dapat diakses di:
 ```
-http://localhost:3000/api-docs
+https://binarkm7-441108.et.r.appspot.com/api-docs/
 ```
 
 ## Testing
