@@ -46,11 +46,8 @@ module.exports = {
                         image_url: uploadFile.url, // This is the URL returned by ImageKit
                     },
                 });
-            } catch (error) {
-                return res.status(500).json({
-                    status: false,
-                    message: 'Image upload failed',
-                });
+            } catch (err) {
+                throw new Error(err.message);
             }
-        }
+    }
 };

@@ -2,7 +2,6 @@ require('dotenv').config();
 
 const mediaService = require('../media');
 const httpMocks = require('node-mocks-http');
-const ImageKit = require('imagekit');
 
 jest.mock('imagekit', () => {
     return jest.fn().mockImplementation(() => ({
