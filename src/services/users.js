@@ -4,11 +4,18 @@ import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer'; 
-import { io } from '../libs/socket.js';
 
 const prisma = new PrismaClient();
 
-// Validasi schema user
+const emailSchema = Joi.object({
+    email: Joi.string().email().required(),
+});
+
+const resetPasswordSchema = Joi.object({
+    token: Joi.string().required(),
+    newPassword: Joi.string().min(6).required(),
+});
+
 const userSchema = Joi.object({
     name: Joi.string().required(),
     email: Joi.string().email().required(),
@@ -73,8 +80,6 @@ class UserService {
                 },
             });
 
-            io.emit('newUserNotification', { name: user.name });
-
             return user;
         } catch (err) {
             throw new Error(`Database Error: ${err.message}`);
@@ -82,8 +87,15 @@ class UserService {
     }
 
     async forgotPassword(email) {
+        const { error } = emailSchema.validate({ email });
+        if (error) {
+            console.log('Validation error:', error);
+            throw new Error(`Validation Error: ${error.details[0].message}`);
+        }
+
         const user = await prisma.user.findUnique({
             where: { email },
+            select: { id: true, email: true },
         });
 
         if (!user) {
@@ -91,7 +103,8 @@ class UserService {
         }
 
         const token = jwt.sign({ userId: user.id }, process.env.JWT_RESET_SECRET, { expiresIn: '1d' });
-        const resetUrl = `${process.env.BASE_URL_FRONTEND}/reset-password/${encodeURIComponent(token)}`;
+        console.log('Generated token:', token);
+        const resetUrl = `${process.env.BASE_URL_FRONTEND}/reset-password/${token}`;
 
         await this.sendPasswordResetEmail(user.email, resetUrl);
 
@@ -99,6 +112,11 @@ class UserService {
     }
 
     async resetPassword(token, newPassword) {
+        const { error } = resetPasswordSchema.validate({ token, newPassword });
+        if (error) {
+            throw new Error(`Validation Error: ${error.details[0].message}`);
+        }
+
         let decoded;
         try {
             decoded = jwt.verify(token, process.env.JWT_RESET_SECRET);
@@ -112,8 +130,6 @@ class UserService {
             where: { id: decoded.userId },
             data: { password: hashedPassword },
         });
-
-        io.emit('passwordChangedNotification', { userId: decoded.userId });
 
         return { message: 'Password successfully reset' };
     }
