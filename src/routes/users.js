@@ -3,7 +3,7 @@ import userService from '../services/users.js';
 import { PrismaClient } from '@prisma/client';
 import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { io } from '../libs/socket.js';
+import { Notification } from '../libs/socket.js';
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -11,13 +11,15 @@ const prisma = new PrismaClient();
 // POST: Register a new user
 router.post('/register', async (req, res) => {
     try {
-        const user = await userService.createUser(req.body, io);
+        const user = await userService.createUser(req.body);
+        Notification.push('notifications', 'A new user has registered!');
         res.status(201).json(user);
     } catch (error) {
         console.error('Error in /register:', error.message);
         res.status(400).json({ error: error.message });
     }
 });
+
 
 // GET: Forgot password page
 router.get('/forgot-password', (req, res) => {
@@ -27,8 +29,7 @@ router.get('/forgot-password', (req, res) => {
 // POST: Forgot password
 router.post('/forgot-password', async (req, res) => {
     try {
-        const { email } = req.body;
-        const response = await userService.forgotPassword(email);
+        const response = await userService.forgotPassword(req.body.email);
         res.status(200).json(response);
     } catch (error) {
         console.error('Error in /forgot-password:', error.message);
@@ -45,10 +46,11 @@ router.get('/reset-password', (req, res) => {
 // POST: Reset password
 router.post('/reset-password/:token', async (req, res) => {
     try {
-        const { token } = req.params;
+        const token  = req.params.token;
         const { newPassword } = req.body;
 
-        const response = await userService.resetPassword({ token, newPassword });
+        const response = await userService.resetPassword(token, newPassword);
+        Notification.push('notifications', 'Password reset successful!');
         res.status(200).json({ message: response.message });
     } catch (error) {
         console.error('Error in /reset-password:', error.message);
