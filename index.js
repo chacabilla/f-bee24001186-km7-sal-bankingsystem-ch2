@@ -6,7 +6,7 @@ import { setupExpressErrorHandler } from '@sentry/node';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { join } from 'path';
-const swaggerDocument = require('./swagger.json');
+import swaggerDocument from './swagger.json' assert { type: "json" };
 
 const __dirname = process.cwd();
 
