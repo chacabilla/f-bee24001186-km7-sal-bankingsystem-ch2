@@ -1,9 +1,9 @@
 const router = require('express').Router();
-const storage = require('../libs/multer');
-const { storageImage, imagekitUpload } = require('../services/media');
+import { image } from '../libs/multer.js';
+import { storageImage, imagekitUpload } from '../services/media.js';
 
-const multer = require('multer');
-router.post('/image', storage.image.single('image'), storageImage); //using multer
+import multer from 'multer';
+router.post('/image', image.single('image'), storageImage); //using multer
 router.post('/upload', multer().single('image'), imagekitUpload); //using imagekit
 
-module.exports = router;
+export default router;

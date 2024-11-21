@@ -1,7 +1,7 @@
-const express = require('express');
-const router = express.Router();
-const accountService = require('../services/accounts');
-const authMiddleware = require('../middleware/auth');
+import { Router } from 'express';
+const router = Router();
+import accountService from '../services/accounts.js';
+import authMiddleware from '../middleware/auth.js';
 
 // POST: create a new account
 router.post('/', async (req, res) => {
@@ -63,4 +63,4 @@ router.delete('/:accountId', async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

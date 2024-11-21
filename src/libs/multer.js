@@ -1,20 +1,20 @@
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+import multer, { diskStorage } from 'multer';
+import { extname, resolve } from 'path';
+import { existsSync, mkdirSync } from 'fs';
 
 const generateFilename = (req, file, cb) => {
-    const filename = Date.now() + path.extname(file.originalname);
+    const filename = Date.now() + extname(file.originalname);
     cb(null, filename);
 }
 
 const generateStorage = (folder) => {
-    const dir = path.resolve(__dirname, '..', 'uploads', folder);
+    const dir = resolve(__dirname, '..', 'uploads', folder);
 
-    if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
+    if (!existsSync(dir)) {
+        mkdirSync(dir, { recursive: true });
     }
 
-    return multer.diskStorage({
+    return diskStorage({
         destination: (req, file, cb) => {
             cb(null, dir);
         },
@@ -22,16 +22,14 @@ const generateStorage = (folder) => {
     });
 }
 
-module.exports = {
-    image: multer({
-        storage: generateStorage('images'),
-        fileFilter: (req, file, cb) => {
-            const allowedMimeTypes = ['image/png', 'image/jpg', 'image/jpeg'];
-            if (allowedMimeTypes.includes(file.mimetype)) {
-                cb(null, true);
-            } else {
-                cb(new Error('Invalid file type'), false);
-            }
+export const image = multer({
+    storage: generateStorage('images'),
+    fileFilter: (req, file, cb) => {
+        const allowedMimeTypes = ['image/png', 'image/jpg', 'image/jpeg'];
+        if (allowedMimeTypes.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error('Invalid file type'), false);
         }
-    })
-};
+    }
+});

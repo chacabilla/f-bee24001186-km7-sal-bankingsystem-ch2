@@ -60,3 +60,7 @@ ALTER TABLE "Transaction" ADD CONSTRAINT "Transaction_destinationAccountId_fkey"
 
 -- AddForeignKey
 ALTER TABLE "Profile" ADD CONSTRAINT "Profile_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE "User" ADD COLUMN reset_password_token VARCHAR(255);
+
+ALTER TABLE "User" ADD COLUMN reset_password_expires TIMESTAMP;

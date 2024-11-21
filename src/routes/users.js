@@ -1,56 +1,108 @@
-const express = require('express');
-const router = express.Router();
-const userService = require('../services/users');
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+import { Router } from 'express';
+import userService from '../services/users.js';
+import { PrismaClient } from '@prisma/client';
+import bcryptjs from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { io } from '../libs/socket.js';
 
-// POST: create a new user
+const router = Router();
+const prisma = new PrismaClient();
+
+// POST: Register a new user
 router.post('/register', async (req, res) => {
     try {
-        const user = await userService.createUser(req.body);
-        res.json(user);
+        const user = await userService.createUser(req.body, io);
+        res.status(201).json(user);
     } catch (error) {
+        console.error('Error in /register:', error.message);
         res.status(400).json({ error: error.message });
     }
 });
 
-// GET: get all users
+// GET: Forgot password page
+router.get('/forgot-password', (req, res) => {
+    res.render('forgot-password');
+});
+
+// POST: Forgot password
+router.post('/forgot-password', async (req, res) => {
+    try {
+        const { email } = req.body;
+        const response = await userService.forgotPassword(email);
+        res.status(200).json(response);
+    } catch (error) {
+        console.error('Error in /forgot-password:', error.message);
+        res.status(400).json({ error: error.message });
+    }
+});
+
+// GET: Reset password page
+router.get('/reset-password', (req, res) => {
+    const { token } = req.query;
+    res.render('reset-password', { token });
+});
+
+// POST: Reset password
+router.post('/reset-password/:token', async (req, res) => {
+    try {
+        const { token } = req.params;
+        const { newPassword } = req.body;
+
+        const response = await userService.resetPassword({ token, newPassword });
+        res.status(200).json({ message: response.message });
+    } catch (error) {
+        console.error('Error in /reset-password:', error.message);
+        res.status(400).json({ error: error.message });
+    }
+});
+
+// GET: Fetch all users
 router.get('/', async (req, res) => {
     try {
         const users = await userService.getAllUsers();
-        res.json(users);
+        res.status(200).json(users);
     } catch (error) {
+        console.error('Error in /users:', error.message);
         res.status(500).json({ error: error.message });
     }
 });
 
-// GET: get a user by ID
+// GET: Fetch a user by ID
 router.get('/:userId', async (req, res) => {
     try {
         const user = await userService.getUserById(req.params.userId);
-        res.json(user);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' }); // HTTP 404: Not Found
+        }
+        res.status(200).json(user);
     } catch (error) {
+        console.error('Error in /users/:userId:', error.message);
         res.status(500).json({ error: error.message });
     }
 });
 
-// POST: login
+// POST: Login
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await prisma.user.findUnique(
-            { where: { email } }
-        );
-        if (!user || !(await bcrypt.compare(password, user.password))) { 
-            return res.status(404).json({ error: 'Invalid email or password' });
+
+        // Validate email and password
+        if (!email || !password) {
+            return res.status(400).json({ error: 'Email and password are required' });
         }
-        const token = jwt.sign({ userId: user.id }, 'secret', { expiresIn: '64h' });
-        res.json({ token });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user || !(await bcryptjs.compare(password, user.password))) {
+            return res.status(401).json({ error: 'Invalid email or password' }); // HTTP 401: Unauthorized
+        }
+
+        // Generate JWT token
+        const token = jwt.sign({ userId: user.id }, process.env.JWT_TOKEN, { expiresIn: '64h' });
+        res.status(200).json({ token }); // HTTP 200: OK
+    } catch (error) {
+        console.error('Error in /login:', error.message);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 
-module.exports = router;
+export default router;

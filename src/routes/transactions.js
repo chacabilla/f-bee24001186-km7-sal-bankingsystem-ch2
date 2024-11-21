@@ -1,6 +1,6 @@
-const express = require('express');
-const router = express.Router();
-const transactionService = require('../services/transactions');
+import { Router } from 'express';
+const router = Router();
+import transactionService from '../services/transactions.js';
 
 router.post('/', async (req, res) => {
     try {
@@ -29,4 +29,4 @@ router.get('/:transactionId', async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

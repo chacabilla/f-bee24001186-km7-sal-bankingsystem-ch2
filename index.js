@@ -1,31 +1,32 @@
-require('dotenv').config();
-require('./src/libs/sentry.js');
-const express = require('express');
-const Sentry = require('@sentry/node');
-const bodyParser = require('body-parser');
+import 'dotenv/config';
+import './src/libs/sentry.js';
+import express from 'express';
+import { createServer } from 'http';
+import * as swaggerUi from 'swagger-ui-express';
+import { initSocket } from './src/libs/socket.js' ;
+import { setupExpressErrorHandler } from '@sentry/node';
+import json from 'body-parser';
 const app = express();
-const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('./swagger.json');
+const server = createServer(app);
+import swaggerDocument from './swagger.json' assert { type: "json" };
+
 
 // set view engine
 app.set('view engine', 'ejs');
 app.set('views', './src/views');
-
-// middleware untuk parsing JSON
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // media handler
 app.use('/images', express.static('uploads/images'));
 
 // routes
-const emailRoutes = require('./src/routes/email');
-const userRoutes = require('./src/routes/users');
-const accountRoutes = require('./src/routes/accounts');
-const transactionRoutes = require('./src/routes/transactions');
-const mediaRoutes = require('./src/routes/media');
+import userRoutes from './src/routes/users.js';
+import accountRoutes from './src/routes/accounts.js';
+import transactionRoutes from './src/routes/transactions.js';
+import mediaRoutes from './src/routes/media.js';
 
 // use routes
-app.use('/api/v1/email', emailRoutes);
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/accounts', accountRoutes);
 app.use('/api/v1/transactions', transactionRoutes);
@@ -33,6 +34,9 @@ app.use('/api/v1/media', mediaRoutes);
 
 // swagger routes
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+// inisialisasi WebSocket
+initSocket(server);
 
 app.get('/', (req, res) => {
     res.render('index'); // Render index.ejs
@@ -43,7 +47,7 @@ app.get("/debug-sentry", function mainHandler(req, res) {
     throw new Error(500, "My awesome Sentry error!");
   });
   
-Sentry.setupExpressErrorHandler(app);
+setupExpressErrorHandler(app);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
@@ -52,4 +56,4 @@ app.listen(PORT, () => {
 });
 
 
-module.exports = app;
+export default app;

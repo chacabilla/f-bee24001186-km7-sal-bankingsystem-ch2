@@ -1,5 +1,6 @@
-const Joi = require('joi');
-const { PrismaClient } = require('@prisma/client');
+import Joi from 'joi';
+import { PrismaClient } from '@prisma/client';
+
 const prisma = new PrismaClient();
 
 const accountSchema = Joi.object({
@@ -11,17 +12,16 @@ const accountSchema = Joi.object({
 
 class AccountService {
     async createAccount(data) {
-        // validasi dengan Joi
         const { error } = accountSchema.validate(data);
         if (error) {
-            throw new Error(error.details[0].message);
+            throw new Error(`Validation error: ${error.details[0].message}`);
         }
 
         const { userId, bankName, bankAccountNumber, balance } = data;
+
         const existingAccount = await prisma.bankAccount.findUnique({
             where: { bankAccountNumber }
         });
-
         if (existingAccount) {
             throw new Error('Account with this bank account number already exists');
         }
@@ -37,59 +37,96 @@ class AccountService {
             });
             return account;
         } catch (error) {
-            throw new Error(`failed to create account: ${error.message} || 'unknown error occurred'`);
+            console.error('Error in createAccount:', error.message);
+            throw new Error('Failed to create account');
         }
     }
 
+    // Mengambil semua akun
     async getAllAccounts() {
-        const accounts = await prisma.bankAccount.findMany();
-        return accounts;
-    }
-
-    async getAccountById(accountId) {
-        const account = await prisma.bankAccount.findUnique({
-            where: { id: Number(accountId) }
-        });
-        return account;
-    }
-
-    async withdraw(accountId, amount) {
-        const account = await prisma.bankAccount.findUnique({ where: { id: Number(accountId) } });
-        if (!account) throw new Error('Account not found');
-        if (account.balance < amount) {
-            throw new Error('Insufficient balance');
-        }
-
-        const updatedAccount = await prisma.bankAccount.update({
-            where: { id: Number(accountId) },
-            data: { balance: { decrement: amount } }
-        });
-        return updatedAccount;
-    }
-
-    async deposit(accountId, amount) {
-        const account = await prisma.bankAccount.findUnique({ where: { id: Number(accountId) } });
-        if (!account) throw new Error('Account not found');
-
-        const updatedAccount = await prisma.bankAccount.update({
-            where: { id: Number(accountId) },
-            data: { balance: { increment: amount } }
-        });
-        return updatedAccount;
-    }
-
-    async deleteAccount(accountId) {
-        const account = await prisma.bankAccount.findUnique({ where: { id: Number(accountId) } });
-        if (!account) throw new Error('Account not found');
         try {
+            const accounts = await prisma.bankAccount.findMany();
+            return accounts;
+        } catch (error) {
+            console.error('Error in getAllAccounts:', error.message);
+            throw new Error('Failed to fetch accounts');
+        }
+    }
+
+    // Mengambil akun berdasarkan ID
+    async getAccountById(accountId) {
+        try {
+            const account = await prisma.bankAccount.findUnique({
+                where: { id: Number(accountId) }
+            });
+            if (!account) throw new Error('Account not found');
+            return account;
+        } catch (error) {
+            console.error('Error in getAccountById:', error.message);
+            throw new Error('Failed to fetch account');
+        }
+    }
+
+    // Menarik dana dari akun
+    async withdraw(accountId, amount) {
+        try {
+            const account = await prisma.bankAccount.findUnique({ where: { id: Number(accountId) } });
+            if (!account) throw new Error('Account not found');
+            if (account.balance < amount) {
+                throw new Error('Insufficient balance');
+            }
+
+            // Gunakan transaksi untuk konsistensi data
+            const updatedAccount = await prisma.$transaction(async (tx) => {
+                return await tx.bankAccount.update({
+                    where: { id: Number(accountId) },
+                    data: { balance: { decrement: amount } }
+                });
+            });
+
+            return updatedAccount;
+        } catch (error) {
+            console.error('Error in withdraw:', error.message);
+            throw new Error('Failed to withdraw funds');
+        }
+    }
+
+    // Menyetor dana ke akun
+    async deposit(accountId, amount) {
+        try {
+            const account = await prisma.bankAccount.findUnique({ where: { id: Number(accountId) } });
+            if (!account) throw new Error('Account not found');
+
+            // Gunakan transaksi untuk konsistensi data
+            const updatedAccount = await prisma.$transaction(async (tx) => {
+                return await tx.bankAccount.update({
+                    where: { id: Number(accountId) },
+                    data: { balance: { increment: amount } }
+                });
+            });
+
+            return updatedAccount;
+        } catch (error) {
+            console.error('Error in deposit:', error.message);
+            throw new Error('Failed to deposit funds');
+        }
+    }
+
+    // Menghapus akun berdasarkan ID
+    async deleteAccount(accountId) {
+        try {
+            const account = await prisma.bankAccount.findUnique({ where: { id: Number(accountId) } });
+            if (!account) throw new Error('Account not found');
+
             const deletedAccount = await prisma.bankAccount.delete({
                 where: { id: Number(accountId) }
             });
             return deletedAccount;
         } catch (error) {
-            throw new Error(`Failed to delete account: ${error.message}`);
+            console.error('Error in deleteAccount:', error.message);
+            throw new Error('Failed to delete account');
         }
     }
 }
 
-module.exports = new AccountService();
+export default new AccountService();

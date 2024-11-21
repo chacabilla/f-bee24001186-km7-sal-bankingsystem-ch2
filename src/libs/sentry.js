@@ -1,21 +1,21 @@
 // Import with `import * as Sentry from "@sentry/node"` if you are using ESM
-const Sentry = require("@sentry/node");
-const { nodeProfilingIntegration } = require("@sentry/profiling-node");
+import { init, debugIntegration, profiler, startSpan } from "@sentry/node";
+import { nodeProfilingIntegration } from "@sentry/profiling-node";
 
-Sentry.init({
+init({
   dsn: process.env.SENTRY_DSN,
   integrations: [
-    nodeProfilingIntegration(), Sentry.debugIntegration()
+    nodeProfilingIntegration(), debugIntegration()
   ],
   // Tracing
   tracesSampleRate: 1.0, //  Capture 100% of the transactions
 });
 // Manually call startProfiler and stopProfiler
 // to profile the code in between
-Sentry.profiler.startProfiler();
+profiler.startProfiler();
 
 // Starts a transaction that will also be profiled
-Sentry.startSpan({
+startSpan({
   name: "Banking System - Salsa",
 }, () => {
   // the code executing inside the transaction will be wrapped in a span and profiled
@@ -23,4 +23,11 @@ Sentry.startSpan({
 
 // Calls to stopProfiling are optional - if you don't stop the profiler, it will keep profiling
 // your application until the process exits or stopProfiling is called.
-Sentry.profiler.stopProfiler();
+profiler.stopProfiler();
+
+module.exports = {
+  init,
+  debugIntegration,
+  profiler,
+  startSpan
+};
