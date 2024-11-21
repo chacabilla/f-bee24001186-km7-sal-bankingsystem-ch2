@@ -14,6 +14,10 @@
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer"
+      },
+      "noauthAuth": {
+        "type": "http",
+        "scheme": "noauth"
       }
     }
   },
@@ -29,6 +33,9 @@
     },
     {
       "name": "media"
+    },
+    {
+      "name": "notifications"
     }
   ],
   "paths": {
@@ -57,9 +64,9 @@
           "400": {
             "description": "Bad Request",
             "content": {
-              "application/json": {
+              "text/plain": {
                 "schema": {
-                  "type": "object"
+                  "type": "string"
                 },
                 "example": "{\r\n    \"error\": \"Account with this bank account number already exists\"\r\n}"
               }
@@ -392,6 +399,368 @@
                   "type": "string"
                 },
                 "example": "{\r\n    \"error\": \"Invalid email or password\"\r\n}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/forgot-password": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Forgot Password",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              },
+              "Content-Type": {
+                "schema": {
+                  "type": "string",
+                  "example": "text/html; charset=utf-8"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer",
+                  "example": "2705"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"a91-+veMD9UU192n9T+LbHGGjDtkcmE\""
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Thu, 21 Nov 2024 14:22:48 GMT"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              }
+            },
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "<!DOCTYPE html>\n<html lang=\"en\">\n    <head>\n        <meta charset=\"UTF-8\">\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n        <title>Lupa Password</title>\n        <link href=\"https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap\" rel=\"stylesheet\">\n        <style>\r\n        body {\r\n            font-family: 'Roboto', sans-serif;\r\n            background-color: #e0f7fa;\r\n            margin: 0;\r\n            padding: 0;\r\n            display: flex;\r\n            justify-content: center;\r\n            align-items: center;\r\n            height: 100vh;\r\n        }\r\n\r\n        .container {\r\n            background-color: #ffffff;\r\n            padding: 30px;\r\n            border-radius: 10px;\r\n            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);\r\n            width: 100%;\r\n            max-width: 400px;\r\n            text-align: center;\r\n        }\r\n\r\n        h1 {\r\n            color: #00796b;\r\n            font-size: 24px;\r\n            margin-bottom: 20px;\r\n        }\r\n\r\n        label {\r\n            font-size: 14px;\r\n            margin-bottom: 8px;\r\n            color: #00796b;\r\n            text-align: left;\r\n        }\r\n\r\n        input[type=\"email\"] {\r\n            padding: 15px;\r\n            margin-bottom: 20px;\r\n            border: 1px solid #00796b;\r\n            border-radius: 5px;\r\n            width: 100%;\r\n            font-size: 14px;\r\n            box-sizing: border-box;\r\n            transition: border-color 0.3s;\r\n        }\r\n\r\n        input[type=\"email\"]:focus {\r\n            border-color: #004d40;\r\n            outline: none;\r\n        }\r\n\r\n        button {\r\n            background-color: #00796b;\r\n            color: white;\r\n            padding: 15px;\r\n            border: none;\r\n            border-radius: 5px;\r\n            font-size: 16px;\r\n            width: 100%;\r\n            cursor: pointer;\r\n            transition: background-color 0.3s;\r\n        }\r\n\r\n        button:hover {\r\n            background-color: #004d40;\r\n        }\r\n\r\n        a {\r\n            text-decoration: none;\r\n            color: #00796b;\r\n            font-size: 14px;\r\n            margin-top: 20px;\r\n            display: inline-block;\r\n        }\r\n\r\n        a:hover {\r\n            text-decoration: underline;\r\n        }\r\n    </style>\n    </head>\n    <body>\n        <div class=\"container\">\n            <h1>Lupa Password</h1>\n            <form action=\"/forgot-password\" method=\"POST\">\n                <label for=\"email\">Masukkan Email Anda:</label>\n                <input type=\"email\" id=\"email\" name=\"email\" required placeholder=\"Email Anda\">\n                <button type=\"submit\">Kirim Link Reset Password</button>\n            </form>\n            <a href=\"/login\">Kembali ke Login</a>\n        </div>\n    </body>\n</html>"
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "email Forgot Password",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "email": "asalsabilla9@gmail.com"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{\r\n    \"message\": \"Password reset link has been sent to your email\"\r\n}"
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "headers": {
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              },
+              "Content-Type": {
+                "schema": {
+                  "type": "string",
+                  "example": "application/json; charset=utf-8"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer",
+                  "example": "26"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"1a-hq/hT0ORGTkTfyRpVCZ/JB/r8Eg\""
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Thu, 21 Nov 2024 14:24:29 GMT"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "error": "User not found"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/reset-password": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "reset password",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              },
+              "Content-Type": {
+                "schema": {
+                  "type": "string",
+                  "example": "text/html; charset=utf-8"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer",
+                  "example": "2796"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"aec-rUm67GqQKQicJtFONq2yivxHriI\""
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Thu, 21 Nov 2024 14:23:18 GMT"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              }
+            },
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "<!DOCTYPE html>\n<html lang=\"en\">\n    <head>\n        <meta charset=\"UTF-8\">\n        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n        <title>Reset Password</title>\n        <link href=\"https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap\" rel=\"stylesheet\">\n        <style>\r\n        body {\r\n            font-family: 'Roboto', sans-serif;\r\n            background-color: #e0f7fa;\r\n            margin: 0;\r\n            padding: 0;\r\n            display: flex;\r\n            justify-content: center;\r\n            align-items: center;\r\n            height: 100vh;\r\n        }\r\n\r\n        .container {\r\n            background-color: #ffffff;\r\n            padding: 30px;\r\n            border-radius: 10px;\r\n            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);\r\n            width: 100%;\r\n            max-width: 400px;\r\n            text-align: center;\r\n        }\r\n\r\n        h1 {\r\n            color: #00796b;\r\n            font-size: 24px;\r\n            margin-bottom: 20px;\r\n        }\r\n\r\n        label {\r\n            font-size: 14px;\r\n            margin-bottom: 8px;\r\n            color: #00796b;\r\n            text-align: left;\r\n        }\r\n\r\n        input[type=\"password\"] {\r\n            padding: 15px;\r\n            margin-bottom: 20px;\r\n            border: 1px solid #00796b;\r\n            border-radius: 5px;\r\n            width: 100%;\r\n            font-size: 14px;\r\n            box-sizing: border-box;\r\n            transition: border-color 0.3s;\r\n        }\r\n\r\n        input[type=\"password\"]:focus {\r\n            border-color: #004d40;\r\n            outline: none;\r\n        }\r\n\r\n        button {\r\n            background-color: #00796b;\r\n            color: white;\r\n            padding: 15px;\r\n            border: none;\r\n            border-radius: 5px;\r\n            font-size: 16px;\r\n            width: 100%;\r\n            cursor: pointer;\r\n            transition: background-color 0.3s;\r\n        }\r\n\r\n        button:hover {\r\n            background-color: #004d40;\r\n        }\r\n\r\n        a {\r\n            text-decoration: none;\r\n            color: #00796b;\r\n            font-size: 14px;\r\n            margin-top: 20px;\r\n            display: inline-block;\r\n        }\r\n\r\n        a:hover {\r\n            text-decoration: underline;\r\n        }\r\n    </style>\n    </head>\n    <body>\n        <div class=\"container\">\n            <h1>Reset Password</h1>\n            <form action=\"/reset-password\" method=\"POST\">\n                <input type=\"hidden\" name=\"token\" value=\"{{ token }}\">\n                <label for=\"newPassword\">Password Baru:</label>\n                <input type=\"password\" id=\"newPassword\" name=\"newPassword\" required placeholder=\"Masukkan Password Baru\">\n                <button type=\"submit\">Reset Password</button>\n            </form>\n            <a href=\"/login\">Kembali ke Login</a>\n        </div>\n    </body>\n</html>"
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "reset password",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "example": {
+                  "token": "336a848e-68a1-4ce5-8aab-19cebb3a31d9",
+                  "newPassword": "newSecurePassword123"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "noauthAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              },
+              "Content-Type": {
+                "schema": {
+                  "type": "string",
+                  "example": "application/json; charset=utf-8"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer",
+                  "example": "41"
+                }
+              },
+              "ETag": {
+                "schema": {
+                  "type": "string",
+                  "example": "W/\"29-U+DezwXunDsXNbIjeyjIyEN8ONM\""
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Thu, 21 Nov 2024 14:23:35 GMT"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                },
+                "example": {
+                  "message": "Password successfully reset"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "headers": {
+              "X-Powered-By": {
+                "schema": {
+                  "type": "string",
+                  "example": "Express"
+                }
+              },
+              "Content-Security-Policy": {
+                "schema": {
+                  "type": "string",
+                  "example": "default-src 'none'"
+                }
+              },
+              "X-Content-Type-Options": {
+                "schema": {
+                  "type": "string",
+                  "example": "nosniff"
+                }
+              },
+              "Content-Type": {
+                "schema": {
+                  "type": "string",
+                  "example": "text/html; charset=utf-8"
+                }
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer",
+                  "example": "167"
+                }
+              },
+              "Date": {
+                "schema": {
+                  "type": "string",
+                  "example": "Thu, 21 Nov 2024 14:24:00 GMT"
+                }
+              },
+              "Connection": {
+                "schema": {
+                  "type": "string",
+                  "example": "keep-alive"
+                }
+              },
+              "Keep-Alive": {
+                "schema": {
+                  "type": "string",
+                  "example": "timeout=5"
+                }
+              }
+            },
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "<!DOCTYPE html>\n<html lang=\"en\">\n    <head>\n        <meta charset=\"utf-8\">\n        <title>Error</title>\n    </head>\n    <body>\n        <pre>Cannot POST /api/v1/users/reset-password</pre>\n    </body>\n</html>"
               }
             }
           }
