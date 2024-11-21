@@ -121,7 +121,7 @@ class UserService {
         try {
             decoded = jwt.verify(token, process.env.JWT_RESET_SECRET);
         } catch (err) {
-            throw new Error('Invalid or expired token');
+            throw new Error(`error: ${err.message}`);
         }
 
         const hashedPassword = await bcrypt.hash(newPassword, 10);

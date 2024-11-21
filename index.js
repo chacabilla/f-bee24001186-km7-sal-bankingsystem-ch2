@@ -5,8 +5,8 @@ import * as swaggerUi from 'swagger-ui-express';
 import { setupExpressErrorHandler } from '@sentry/node';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import path, { join } from 'path';
-import swaggerDocument from './swagger.json' assert { type: "json" };
+import { join } from 'path';
+const swaggerDocument = require('./swagger.json');
 
 const __dirname = process.cwd();
 
@@ -63,7 +63,7 @@ app.get('/', (req, res) => {
 });
 
 
-app.get("/debug-sentry", function mainHandler(req, res) {
+app.get("/debug-sentry", function mainHandler() {
     throw new Error(500, "My awesome Sentry error!");
   });
   
